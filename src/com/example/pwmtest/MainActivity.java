@@ -2,7 +2,6 @@ package com.example.pwmtest;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -23,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-
 	public static final String TAG = "MAINLOG";
 	public static final int MIN_VALUE = 10;
 
@@ -45,13 +43,12 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		Log.d(TAG, "onCreate");
+
 		init();
 
 		seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
-
 				send_progress = (int) (10 + (progress * 2.45));
 				new BrightnessJNI().setBrightness(send_progress);
 				percentText.setText("" + progress + "%"); // 0~100
@@ -132,10 +129,7 @@ public class MainActivity extends Activity {
 					imm.hideSoftInputFromWindow(modifyBtn.getWindowToken(), 0);
 					int _send = (modifyInt << 16) + send_progress;
 					resultExpArray[send_progress] = modifyInt;
-					if (new BrightnessJNI().setBrightness(_send) == 0)
-						Log.d(TAG, "setExpCurve err");
-					else
-						Log.d(TAG, "setExpCurve ok");
+					new BrightnessJNI().setBrightness(_send);
 				}
 			}
 			break;
@@ -148,7 +142,6 @@ public class MainActivity extends Activity {
 			break;
 
 		case R.id.save_btn:
-
 			str_Path_Full = Environment.getExternalStorageDirectory()
 					.getAbsolutePath()
 					+ "/backlight"
@@ -172,34 +165,15 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
-	protected void onDestroy() {
-		Log.d(TAG, "onDestroy");
-		super.onDestroy();
-	}
-
-	@Override
-	protected void onPause() {
-		Log.d(TAG, "onPause");
-		super.onPause();
-	}
-
-	@Override
 	protected void onRestart() {
 		Log.d(TAG, "onRestart");
-		if ((save_flag == true)){ //home에서 들어온 경우
+		if ((save_flag == true)) { // home에서 들어온 경우
 			home_brightness = new BrightnessJNI().getBrightness();
 			new BrightnessJNI().setBrightness(app_brightness);
-		}
-		else
-			save_flag =true;
+		} else
+			save_flag = true;
 
 		super.onRestart();
-	}
-
-	@Override
-	protected void onResume() {
-		Log.d(TAG, "onResume");
-		super.onResume();
 	}
 
 	@Override
@@ -217,24 +191,11 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		Log.d(TAG, "onStop");
-		if (save_flag == true){
+		if (save_flag == true) {
 			app_brightness = new BrightnessJNI().getBrightness();
 			new BrightnessJNI().setBrightness(home_brightness);
-		
 		}
 		super.onStop();
-	}
-
-	@Override
-	protected void onUserLeaveHint() {
-
-		Log.d(TAG, "home");
-
-
-//		save_flag = true;
-
-		super.onUserLeaveHint();
-
 	}
 
 }
